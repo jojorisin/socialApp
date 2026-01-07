@@ -2,7 +2,6 @@ package se.jensen.johanna.socialapp.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,9 +16,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()).authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                                .requestMatchers("/users/**", "/posts/**", "users/admin/register").permitAll()
+                                .requestMatchers("/users/register", "users/admin/register").permitAll()
+                                .requestMatchers("/users/**", "/posts/**").authenticated()
                                 .anyRequest().authenticated())
-                .formLogin(Customizer.withDefaults());
+                .formLogin(form -> form
+                        .defaultSuccessUrl("/posts", true));
         return http.build();
     }
 
