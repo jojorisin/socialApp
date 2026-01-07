@@ -45,6 +45,14 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
+    //ändra sen, bara för att pusha till git
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin")
+    public ResponseEntity<List<PostDTO>> getAllPostsAdmin() {
+        List<PostDTO> postDTOs = postService.findAllPosts();
+        return ResponseEntity.ok(postDTOs);
+    }
+
     @GetMapping
     public ResponseEntity<List<PostDTO>> getAllPosts() {
         List<PostDTO> postDTOs = postService.findAllPosts();
