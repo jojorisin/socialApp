@@ -1,0 +1,55 @@
+package se.jensen.johanna.socialapp.exception;
+
+import se.jensen.johanna.socialapp.dto.ErrorResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e, WebRequest request) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, "NOT_FOUND", e.getMessage(), request);
+
+    }
+
+    @ExceptionHandler(NotUniqueException.class)
+    public ResponseEntity<ErrorResponse> handleNotUnique(NotUniqueException e, WebRequest request) {
+        return buildErrorResponse(HttpStatus.CONFLICT, "NOT_UNIQUE", e.getMessage(), request);
+    }
+
+    @ExceptionHandler(PasswordMisMatchException.class)
+    public ResponseEntity<ErrorResponse> handlePasswordMisMatch(PasswordMisMatchException e, WebRequest request) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "PASSWORD_MISMATCH", e.getMessage(), request);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationError(MethodArgumentNotValidException e) {
+        Map<String, String> errors = new HashMap<>();
+
+        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
+            String fieldName = fieldError.getField();
+            String message = fieldError.getDefaultMessage();
+            errors.put(fieldName, message);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String error, String message, WebRequest request) {
+        String path = getPath(request);
+        return ResponseEntity.status(status).body(new ErrorResponse(status.value(), error, message, path, Instant.now().toString()));
+    }
+
+    private String getPath(WebRequest request) {
+        return request.getDescription(false).replace("uri=", "");
+    }
+}
