@@ -4,12 +4,14 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.jensen.johanna.socialapp.dto.PostDTO;
+import se.jensen.johanna.socialapp.dto.PostListDTO;
 import se.jensen.johanna.socialapp.dto.PostRequest;
 import se.jensen.johanna.socialapp.dto.PostResponse;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostRequest;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostResponse;
 import se.jensen.johanna.socialapp.exception.ForbiddenException;
 import se.jensen.johanna.socialapp.exception.NotFoundException;
+import se.jensen.johanna.socialapp.mapper.CommentMapper;
 import se.jensen.johanna.socialapp.mapper.PostMapper;
 import se.jensen.johanna.socialapp.model.Post;
 import se.jensen.johanna.socialapp.model.User;
@@ -25,11 +27,12 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final UserRepository userRepository;
+    private final CommentMapper commentMapper;
 
 
-    public List<PostDTO> findAllPosts() {
+    public List<PostListDTO> findAllPosts() {
         return postRepository.findAll().stream()
-                .map(postMapper::toDTO).toList();
+                .map(postMapper::toPostList).toList();
 
     }
 
@@ -37,7 +40,7 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(NotFoundException::new);
 
-        return postMapper.toDTO(post);
+        return postMapper.toDTO(post, commentMapper);
     }
 
     public PostResponse addPost(PostRequest postRequest, Long userId) {

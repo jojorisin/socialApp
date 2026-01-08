@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.johanna.socialapp.dto.PostDTO;
+import se.jensen.johanna.socialapp.dto.PostListDTO;
 import se.jensen.johanna.socialapp.dto.PostRequest;
 import se.jensen.johanna.socialapp.dto.PostResponse;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostRequest;
@@ -47,15 +48,15 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
-    public ResponseEntity<List<PostDTO>> getAllPostsAdmin() {
-        List<PostDTO> postDTOs = postService.findAllPosts();
+    public ResponseEntity<List<PostListDTO>> getAllPostsAdmin() {
+        List<PostListDTO> postDTOs = postService.findAllPosts();
         return ResponseEntity.ok(postDTOs);
     }
 
 
     @GetMapping
-    public ResponseEntity<List<PostDTO>> getAllPosts() {
-        List<PostDTO> postDTOs = postService.findAllPosts();
+    public ResponseEntity<List<PostListDTO>> getAllPosts() {
+        List<PostListDTO> postDTOs = postService.findAllPosts();
 
         return ResponseEntity.ok(postDTOs);
 

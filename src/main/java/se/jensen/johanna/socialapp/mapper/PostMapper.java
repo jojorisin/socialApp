@@ -1,19 +1,33 @@
 package se.jensen.johanna.socialapp.mapper;
 
 import org.mapstruct.*;
-import se.jensen.johanna.socialapp.dto.PostDTO;
-import se.jensen.johanna.socialapp.dto.PostRequest;
-import se.jensen.johanna.socialapp.dto.PostResponse;
+import se.jensen.johanna.socialapp.dto.*;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostRequest;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostResponse;
 import se.jensen.johanna.socialapp.model.Post;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring", uses = CommentMapper.class)
 public interface PostMapper {
 
     @Mapping(target = "userId", source = "post.user.userId")
     @Mapping(target = "username", source = "post.user.username")
-    PostDTO toDTO(Post post);
+    @Mapping(target = "comments", expression = "java(getMainComments(post, commentMapper))")
+    PostDTO toDTO(Post post, @Context CommentMapper commentMapper);
+
+    default List<CommentDTO> getMainComments(Post post, CommentMapper commentMapper) {
+        if (post.getComments() == null) return List.of();
+
+        return post.getComments().stream()
+                .filter(comment -> comment.getParent() == null)
+                .map(commentMapper::toCommentDTO)  //
+                .toList();
+    }
+
+    @Mapping(target = "userId", source = "user.userId")
+    @Mapping(target = "username", source = "user.username")
+    PostListDTO toPostList(Post post);
 
     Post toPost(PostRequest postRequest);
 
