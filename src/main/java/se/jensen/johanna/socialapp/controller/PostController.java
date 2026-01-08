@@ -8,12 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import se.jensen.johanna.socialapp.dto.PostDTO;
-import se.jensen.johanna.socialapp.dto.PostRequest;
-import se.jensen.johanna.socialapp.dto.PostResponse;
+import se.jensen.johanna.socialapp.dto.*;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostRequest;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostResponse;
 import se.jensen.johanna.socialapp.security.MyUserDetails;
+import se.jensen.johanna.socialapp.service.CommentService;
 import se.jensen.johanna.socialapp.service.PostService;
 
 import java.util.List;
@@ -23,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final CommentService commentService;
 
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -45,13 +45,13 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
-    //ändra sen, bara för att pusha till git
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
     public ResponseEntity<List<PostDTO>> getAllPostsAdmin() {
         List<PostDTO> postDTOs = postService.findAllPosts();
         return ResponseEntity.ok(postDTOs);
     }
+
 
     @GetMapping
     public ResponseEntity<List<PostDTO>> getAllPosts() {
@@ -61,10 +61,25 @@ public class PostController {
 
     }
 
+    //här ska va comment
     @GetMapping("/{postId}")
     public ResponseEntity<PostDTO> getPost(@PathVariable Long postId) {
         PostDTO postDTO = postService.findPost(postId);
         return ResponseEntity.ok(postDTO);
+    }
+
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<CommentResponse> postComment(@PathVariable
+                                                       Long postId,
+                                                       @AuthenticationPrincipal
+                                                       MyUserDetails userDetails,
+                                                       @RequestBody @Valid
+                                                       CommentRequest commentRequest) {
+        CommentResponse commentResponse = commentService.postComment(
+                postId, userDetails.getUserId(), commentRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentResponse);
+
     }
 
 
