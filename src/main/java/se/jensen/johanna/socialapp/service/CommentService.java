@@ -27,9 +27,6 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentMapper commentMapper;
 
-    public void findAllComments(Long postId) {
-
-    }
 
     public CommentResponse postComment(Long postId,
                                        Long userId,
@@ -55,7 +52,6 @@ public class CommentService {
         Comment reply = commentMapper.toComment(commentRequest);
         reply.setUser(user);
         parent.addReply(reply);
-        commentRepository.save(parent);
         commentRepository.save(reply);
 
         return commentMapper.toReplyCommentResponse(reply);
