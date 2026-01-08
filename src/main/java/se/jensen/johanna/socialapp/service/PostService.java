@@ -55,6 +55,8 @@ public class PostService {
             throw new ForbiddenException("You are not authorized to edit this post");
         }
         postMapper.updatePost(postRequest, post);
+        postRepository.save(post);
+
 
         return postMapper.toPostResponse(post);
 

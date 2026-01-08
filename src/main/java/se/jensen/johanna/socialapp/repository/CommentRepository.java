@@ -12,7 +12,8 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("SELECT c FROM Comment c LEFT JOIN FETCH c.replies " +
-            "WHERE c.post.postId=:postId AND c.parent IS NULL")
+            "WHERE c.post.postId=:postId AND c.parent IS NULL " +
+            "ORDER BY c.createdAt ASC")
     List<Comment> findAllMainCommentsWithReplies(@Param("postId")
                                                  Long postId);
 }

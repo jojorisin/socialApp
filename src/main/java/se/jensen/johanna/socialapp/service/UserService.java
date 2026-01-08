@@ -45,7 +45,7 @@ public class UserService {
 
 
     public List<UserDTO> findAllUsers() {
-        return userRepository.findAll().stream()
+        return userRepository.findAllUsersByRole(Role.MEMBER).stream()
                 .map(userMapper::toUserDTO).toList();
 
     }
