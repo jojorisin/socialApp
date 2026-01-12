@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.johanna.socialapp.dto.PostDTO;
 import se.jensen.johanna.socialapp.dto.PostListDTO;
@@ -14,7 +15,6 @@ import se.jensen.johanna.socialapp.dto.PostRequest;
 import se.jensen.johanna.socialapp.dto.PostResponse;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostRequest;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostResponse;
-import se.jensen.johanna.socialapp.security.MyUserDetails;
 import se.jensen.johanna.socialapp.service.PostService;
 
 import java.util.List;
@@ -73,9 +73,9 @@ public class PostController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<PostResponse> post(@AuthenticationPrincipal
-                                             MyUserDetails userDetails,
+                                             Jwt jwt,
                                              @RequestBody @Valid PostRequest post) {
-        PostResponse postResponse = postService.addPost(post, userDetails.getUserId());
+        PostResponse postResponse = postService.addPost(post, jwt.getClaim("userId"));
         return ResponseEntity.status(HttpStatus.CREATED).body(postResponse);
 
     }
@@ -83,14 +83,14 @@ public class PostController {
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{postId}")
     public ResponseEntity<PostResponse> editPost(@AuthenticationPrincipal
-                                                 MyUserDetails userDetails,
+                                                 Jwt jwt,
                                                  @PathVariable Long postId,
                                                  @RequestBody @Valid PostRequest postRequest) {
 
         PostResponse postResponse = postService.updatePost(
                 postRequest,
                 postId,
-                userDetails.getUserId());
+                jwt.getClaim("userId"));
 
         return ResponseEntity.ok(postResponse);
 
@@ -99,9 +99,9 @@ public class PostController {
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(@AuthenticationPrincipal
-                                           MyUserDetails userDetails,
+                                           Jwt jwt,
                                            @PathVariable Long postId) {
-        postService.deletePost(postId, userDetails.getUserId());
+        postService.deletePost(postId, jwt.getClaim("userId"));
 
         return ResponseEntity.noContent().build();
     }
