@@ -6,12 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.johanna.socialapp.dto.*;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdateUserRequest;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdateUserResponse;
 import se.jensen.johanna.socialapp.dto.admin.AdminUserDTO;
-import se.jensen.johanna.socialapp.security.MyUserDetails;
 import se.jensen.johanna.socialapp.service.UserService;
 
 import java.util.List;
@@ -25,13 +25,13 @@ public class UserController {
     //OBS vilka är för admin vilka för user
 
 
-    @PostMapping("/register")
+    /*@PostMapping("/register")
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest userRequest) {
         UserResponse userResponse = userService.registerUser(userRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
 
-    }
+    }*/
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
@@ -94,10 +94,10 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/me")
     //kan endast nå av authenticated
-    public ResponseEntity<UpdateUserResponse> updateUser(@AuthenticationPrincipal MyUserDetails userDetails,
+    public ResponseEntity<UpdateUserResponse> updateUser(@AuthenticationPrincipal Jwt jwt,
                                                          @RequestBody UpdateUserRequest userRequest) {
 
-        UpdateUserResponse userResponse = userService.updateUser(userRequest, userDetails.getUserId());
+        UpdateUserResponse userResponse = userService.updateUser(userRequest, jwt.getClaim("userId"));
         return ResponseEntity.ok(userResponse);
     }
 
@@ -105,9 +105,9 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/me")
     public ResponseEntity<Void> deleteMe(@AuthenticationPrincipal
-                                         MyUserDetails userDetails) {
+                                         Jwt jwt) {
 
-        userService.deleteUser(userDetails.getUserId());
+        userService.deleteUser(jwt.getClaim("userId"));
 
         return ResponseEntity.noContent().build();
 

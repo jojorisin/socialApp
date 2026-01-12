@@ -1,5 +1,6 @@
 package se.jensen.johanna.socialapp.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,19 +20,24 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
 
-    public UserResponse registerUser(UserRequest userRequest) {
+    public RegisterUserResponse registerUser(UserRequest userRequest) {
         validateCredentials(userRequest);
 
         String hashedPw = passwordEncoder.encode(userRequest.password());
         User user = userMapper.toUser(userRequest, hashedPw, Role.MEMBER);
         userRepository.save(user);
-        return userMapper.toUserResponse(user);
+        RegisterUserResponse response = new RegisterUserResponse();
+        response.setEmail(user.getEmail());
+        response.setUsername(user.getUsername());
+        response.setUserId(user.getUserId());
+        return response;
     }
 
     public UpdateUserResponse updateUser(UpdateUserRequest userRequest, Long userId) {

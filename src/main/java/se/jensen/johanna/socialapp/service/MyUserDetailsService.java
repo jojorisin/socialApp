@@ -1,17 +1,17 @@
 package se.jensen.johanna.socialapp.service;
 
 import lombok.RequiredArgsConstructor;
-import se.jensen.johanna.socialapp.model.User;
-import se.jensen.johanna.socialapp.repository.UserRepository;
-import se.jensen.johanna.socialapp.security.MyUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import se.jensen.johanna.socialapp.model.User;
+import se.jensen.johanna.socialapp.repository.UserRepository;
+import se.jensen.johanna.socialapp.security.MyUserDetails;
 
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService {
+public class MyUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
