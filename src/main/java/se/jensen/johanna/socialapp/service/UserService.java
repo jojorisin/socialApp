@@ -87,12 +87,18 @@ public class UserService {
         userRepository.delete(userToDelete);
     }
 
-    public UserResponse registerAdminUser(UserRequest userRequest) {
+    public RegisterUserResponse registerAdminUser(UserRequest userRequest) {
         validateCredentials(userRequest);
+
         String hashedPw = passwordEncoder.encode(userRequest.password());
         User user = userMapper.toUser(userRequest, hashedPw, Role.ADMIN);
         userRepository.save(user);
-        return userMapper.toUserResponse(user);
+        RegisterUserResponse response = new RegisterUserResponse();
+        response.setEmail(user.getEmail());
+        response.setUsername(user.getUsername());
+        response.setUserId(user.getUserId());
+        return response;
+
     }
 
     public AdminUpdateUserResponse updateUserAdmin(AdminUpdateUserRequest userRequest,
