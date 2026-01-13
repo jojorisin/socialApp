@@ -1,5 +1,6 @@
 package se.jensen.johanna.socialapp.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,6 +53,19 @@ public class AuthController {
         userResponse.setToken(token);
         return ResponseEntity.ok().body(userResponse);
 
+    }
+
+    @PostMapping("/register/admin")
+    public ResponseEntity<RegisterUserResponse> registerAdmin(@Valid @RequestBody
+                                                              UserRequest userRequest) {
+        RegisterUserResponse userResponse = userService.registerAdminUser(userRequest);
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        userRequest.username(),
+                        userRequest.password()));
+        String token = tokenService.generateToken(auth);
+        userResponse.setToken(token);
+        return ResponseEntity.ok().body(userResponse);
     }
 
     @PostMapping("/logout")

@@ -1,8 +1,6 @@
 package se.jensen.johanna.socialapp.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,13 +39,14 @@ public class UserController {
         return ResponseEntity.ok(userDTO);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //flytta till auth
+   /* @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/register")
     public ResponseEntity<UserResponse> createAdminUser(@RequestBody @Valid UserRequest userRequest) {
 
         UserResponse userResponse = userService.registerAdminUser(userRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
-    }
+    }*/
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/{userId}")
