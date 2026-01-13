@@ -33,7 +33,6 @@ public class TokenService {
                 .expiresAt(expiresAt)
                 .subject(authentication.getName())
                 .claim("scope", scope)
-                .claim("userId", userDetails.getUserId())
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();

@@ -29,9 +29,10 @@ public class CommentService {
 
 
     public CommentResponse postComment(Long postId,
-                                       Long userId,
+                                       String username,
                                        CommentRequest commentRequest) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+        //User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+        User user = userRepository.findByUsername(username).orElseThrow(NotFoundException::new);
         Post post = postRepository.findById(postId).orElseThrow(NotFoundException::new);
         Comment comment = commentMapper.toComment(commentRequest);
         comment.setUser(user);
@@ -44,9 +45,10 @@ public class CommentService {
 
     public ReplyCommentResponse replyComment(Long postId,
                                              Long parentId,
-                                             Long userId,
+                                             String username,
                                              CommentRequest commentRequest) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+        // User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+        User user = userRepository.findByUsername(username).orElseThrow(NotFoundException::new);
         Post post = postRepository.findById(postId).orElseThrow(NotFoundException::new);
         Comment parent = commentRepository.findById(parentId).orElseThrow(NotFoundException::new);
         Comment reply = commentMapper.toComment(commentRequest);

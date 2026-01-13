@@ -43,8 +43,9 @@ public class PostService {
         return postMapper.toDTO(post, commentMapper);
     }
 
-    public PostResponse addPost(PostRequest postRequest, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+    public PostResponse addPost(PostRequest postRequest, String username) {
+        //User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+        User user = userRepository.findByUsername(username).orElseThrow(NotFoundException::new);
         Post post = postMapper.toPost(postRequest);
         post.setUser(user);
         postRepository.save(post);
@@ -52,9 +53,9 @@ public class PostService {
 
     }
 
-    public PostResponse updatePost(PostRequest postRequest, Long postId, Long userId) {
+    public PostResponse updatePost(PostRequest postRequest, Long postId, String username) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundException::new);
-        if (!post.getUser().getUserId().equals(userId)) {
+        if (!post.getUser().getUsername().equals(username)) {
             throw new ForbiddenException("You are not authorized to edit this post");
         }
         postMapper.updatePost(postRequest, post);
@@ -65,9 +66,9 @@ public class PostService {
 
     }
 
-    public void deletePost(Long postId, Long userId) {
+    public void deletePost(Long postId, String username) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundException::new);
-        if (!post.getUser().getUserId().equals(userId)) {
+        if (!post.getUser().getUsername().equals(username)) {
             throw new ForbiddenException("You are not authorized to delete this post");
         }
         postRepository.delete(post);

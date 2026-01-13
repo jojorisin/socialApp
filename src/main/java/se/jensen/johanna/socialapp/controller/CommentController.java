@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.johanna.socialapp.dto.CommentDTO;
 import se.jensen.johanna.socialapp.dto.CommentRequest;
 import se.jensen.johanna.socialapp.dto.CommentResponse;
 import se.jensen.johanna.socialapp.dto.ReplyCommentResponse;
-import se.jensen.johanna.socialapp.security.MyUserDetails;
 import se.jensen.johanna.socialapp.service.CommentService;
 
 import java.util.List;
@@ -35,11 +35,11 @@ public class CommentController {
     public ResponseEntity<CommentResponse> postComment(@PathVariable
                                                        Long postId,
                                                        @AuthenticationPrincipal
-                                                       MyUserDetails userDetails,
+                                                       Jwt jwt,
                                                        @RequestBody @Valid
                                                        CommentRequest commentRequest) {
         CommentResponse commentResponse = commentService.postComment(
-                postId, userDetails.getUserId(), commentRequest);
+                postId, jwt.getSubject(), commentRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(commentResponse);
 
@@ -48,7 +48,8 @@ public class CommentController {
     @PostMapping("/{commentId}")
     public ResponseEntity<ReplyCommentResponse> commentComment(@PathVariable Long postId,
                                                                @PathVariable Long commentId,
-                                                               @AuthenticationPrincipal MyUserDetails userDetails,
+                                                               @AuthenticationPrincipal
+                                                               Jwt jwt,
                                                                @RequestBody @Valid CommentRequest commentRequest
     ) {
 
@@ -56,7 +57,7 @@ public class CommentController {
                 commentService.replyComment(
                         postId,
                         commentId,
-                        userDetails.getUserId(),
+                        jwt.getSubject(),
                         commentRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(commentResponse);

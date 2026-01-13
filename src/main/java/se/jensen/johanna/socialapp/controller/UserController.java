@@ -60,7 +60,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
+        userService.deleteUserAdmin(userId);
 
         return ResponseEntity.noContent().build();
     }
@@ -97,7 +97,7 @@ public class UserController {
     public ResponseEntity<UpdateUserResponse> updateUser(@AuthenticationPrincipal Jwt jwt,
                                                          @RequestBody UpdateUserRequest userRequest) {
 
-        UpdateUserResponse userResponse = userService.updateUser(userRequest, jwt.getClaim("userId"));
+        UpdateUserResponse userResponse = userService.updateUser(userRequest, jwt.getSubject());
         return ResponseEntity.ok(userResponse);
     }
 
@@ -107,7 +107,7 @@ public class UserController {
     public ResponseEntity<Void> deleteMe(@AuthenticationPrincipal
                                          Jwt jwt) {
 
-        userService.deleteUser(jwt.getClaim("userId"));
+        userService.deleteUser(jwt.getSubject());
 
         return ResponseEntity.noContent().build();
 

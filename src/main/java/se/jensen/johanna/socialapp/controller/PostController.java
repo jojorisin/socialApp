@@ -75,7 +75,7 @@ public class PostController {
     public ResponseEntity<PostResponse> post(@AuthenticationPrincipal
                                              Jwt jwt,
                                              @RequestBody @Valid PostRequest post) {
-        PostResponse postResponse = postService.addPost(post, jwt.getClaim("userId"));
+        PostResponse postResponse = postService.addPost(post, jwt.getSubject());
         return ResponseEntity.status(HttpStatus.CREATED).body(postResponse);
 
     }
@@ -90,7 +90,7 @@ public class PostController {
         PostResponse postResponse = postService.updatePost(
                 postRequest,
                 postId,
-                jwt.getClaim("userId"));
+                jwt.getSubject());
 
         return ResponseEntity.ok(postResponse);
 
@@ -101,7 +101,7 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@AuthenticationPrincipal
                                            Jwt jwt,
                                            @PathVariable Long postId) {
-        postService.deletePost(postId, jwt.getClaim("userId"));
+        postService.deletePost(postId, jwt.getSubject());
 
         return ResponseEntity.noContent().build();
     }
