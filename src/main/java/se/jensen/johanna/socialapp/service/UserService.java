@@ -82,11 +82,8 @@ public class UserService {
         userRepository.delete(userToDelete);
     }
 
-    public void deleteUserAdmin(Long userId) {
-        User userToDelete = userRepository.findById(userId).orElseThrow(NotFoundException::new);
-        userRepository.delete(userToDelete);
-    }
 
+    //GER UT ROLE_ADMIN
     public RegisterUserResponse registerAdminUser(UserRequest userRequest) {
         validateCredentials(userRequest);
 

@@ -11,8 +11,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.johanna.socialapp.dto.PostRequest;
 import se.jensen.johanna.socialapp.dto.PostResponseDTO;
-import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostRequest;
-import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostResponse;
 import se.jensen.johanna.socialapp.service.PostService;
 import se.jensen.johanna.socialapp.util.JwtUtils;
 
@@ -25,34 +23,6 @@ public class PostController {
     private final PostService postService;
 
     private final JwtUtils jwtUtils;
-
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/admin/{postId}")
-    public ResponseEntity<AdminUpdatePostResponse> updatePostAdmin(@RequestBody
-                                                                   AdminUpdatePostRequest
-                                                                           adminRequest,
-                                                                   @PathVariable Long postId) {
-        AdminUpdatePostResponse adminUpdatePostResponse =
-                postService.updatePostAdmin(adminRequest, postId);
-
-        return ResponseEntity.ok(adminUpdatePostResponse);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/admin/{postId}")
-    public ResponseEntity<Void> deletePostAdmin(@PathVariable Long postId) {
-        postService.deletePostAdmin(postId);
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin")
-    public ResponseEntity<List<PostResponseDTO>> getAllPostsAdmin() {
-        List<PostResponseDTO> postResponseDTOS = postService.findAllPosts();
-        return ResponseEntity.ok(postResponseDTOS);
-    }
 
 
     @GetMapping

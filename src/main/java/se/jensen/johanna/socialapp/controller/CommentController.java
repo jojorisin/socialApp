@@ -24,8 +24,8 @@ public class CommentController {
     private final JwtUtils jwtUtils;
 
     @GetMapping
-    public ResponseEntity<List<CommentDTO>> getAllComments(@PathVariable
-                                                           Long postId) {
+    public ResponseEntity<List<CommentDTO>> getAllCommentsForPost(@PathVariable
+                                                                  Long postId) {
         List<CommentDTO> commentDTOS = commentService.findAllMainComments(postId);
 
         return ResponseEntity.ok(commentDTOS);
@@ -50,11 +50,11 @@ public class CommentController {
     }
 
     @PostMapping("/{commentId}")
-    public ResponseEntity<ReplyCommentResponse> commentComment(@PathVariable Long postId,
-                                                               @PathVariable Long commentId,
-                                                               @AuthenticationPrincipal
-                                                               Jwt jwt,
-                                                               @RequestBody @Valid CommentRequest commentRequest
+    public ResponseEntity<ReplyCommentResponse> replyComment(@PathVariable Long postId,
+                                                             @PathVariable Long commentId,
+                                                             @AuthenticationPrincipal
+                                                             Jwt jwt,
+                                                             @RequestBody @Valid CommentRequest commentRequest
     ) {
         Long userId = jwtUtils.extractUserId(jwt);
 

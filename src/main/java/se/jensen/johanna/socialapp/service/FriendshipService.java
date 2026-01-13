@@ -2,7 +2,9 @@ package se.jensen.johanna.socialapp.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import se.jensen.johanna.socialapp.dto.FriendResponseDTO;
 import se.jensen.johanna.socialapp.exception.NotFoundException;
+import se.jensen.johanna.socialapp.mapper.FriendshipMapper;
 import se.jensen.johanna.socialapp.model.Friendship;
 import se.jensen.johanna.socialapp.model.FriendshipStatus;
 import se.jensen.johanna.socialapp.model.User;
@@ -17,15 +19,16 @@ public class FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
     private final UserRepository userRepository;
+    private final FriendshipMapper friendshipMapper;
 
-    public void sendFriendRequest(Long senderId, Long receiverId) {
+    public FriendResponseDTO sendFriendRequest(Long senderId, Long receiverId) {
         if (senderId.equals(receiverId)) {
             throw new IllegalArgumentException("You cannot add yourself as a friend.");
         }
 
         // Check if friendship already exists in either direction
         if (friendshipRepository.existsBySender_UserIdAndReceiver_UserId(senderId, receiverId) ||
-            friendshipRepository.existsBySender_UserIdAndReceiver_UserId(receiverId, senderId)) {
+                friendshipRepository.existsBySender_UserIdAndReceiver_UserId(receiverId, senderId)) {
             throw new IllegalStateException("Friendship or request already exists.");
         }
 
@@ -38,6 +41,7 @@ public class FriendshipService {
         // Status is PENDING by default
 
         friendshipRepository.save(friendship);
+        return friendshipMapper.toFriendResponse(friendship);
     }
 
     public void acceptFriendRequest(Long friendshipId) {
