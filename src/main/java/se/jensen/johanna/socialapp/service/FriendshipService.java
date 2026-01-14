@@ -3,7 +3,9 @@ package se.jensen.johanna.socialapp.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.jensen.johanna.socialapp.dto.FriendResponseDTO;
+import se.jensen.johanna.socialapp.exception.IllegalFriendshipStateException;
 import se.jensen.johanna.socialapp.exception.NotFoundException;
+import se.jensen.johanna.socialapp.exception.UnauthorizedAccessException;
 import se.jensen.johanna.socialapp.mapper.FriendshipMapper;
 import se.jensen.johanna.socialapp.model.Friendship;
 import se.jensen.johanna.socialapp.model.FriendshipStatus;
@@ -51,11 +53,11 @@ public class FriendshipService {
         Friendship friendship = friendshipRepository.findById(friendshipId)
                 .orElseThrow(() -> new NotFoundException("Friendship with id " + friendshipId + " not found."));
 
-        if(!friendship.getReceiver().getUserId().equals(currentUserId)){
-            throw new IllegalStateException("You are not authorized to accept this request.");
+        if (!friendship.getReceiver().getUserId().equals(currentUserId)) {
+            throw new UnauthorizedAccessException("You are not authorized to accept this request.");
         }
-        if(friendship.getStatus().equals(FriendshipStatus.ACCEPTED)){
-            throw new IllegalStateException("This request has already been accepted.");
+        if (friendship.getStatus().equals(FriendshipStatus.ACCEPTED)) {
+            throw new IllegalFriendshipStateException("This request has already been accepted.");
         }
 
         friendship.accept(); // Sets status to ACCEPTED and acceptedAt to now
