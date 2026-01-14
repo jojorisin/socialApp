@@ -7,9 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-import se.jensen.johanna.socialapp.dto.FriendRequestDTO;
-import se.jensen.johanna.socialapp.dto.FriendResponseDTO;
-import se.jensen.johanna.socialapp.model.Friendship;
+import se.jensen.johanna.socialapp.dto.friends.FriendResponseDTO;
 import se.jensen.johanna.socialapp.service.FriendshipService;
 import se.jensen.johanna.socialapp.util.JwtUtils;
 

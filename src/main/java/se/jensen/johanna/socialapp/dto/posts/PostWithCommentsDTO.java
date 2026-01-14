@@ -1,4 +1,6 @@
-package se.jensen.johanna.socialapp.dto;
+package se.jensen.johanna.socialapp.dto.posts;
+
+import se.jensen.johanna.socialapp.dto.comment.CommentDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;

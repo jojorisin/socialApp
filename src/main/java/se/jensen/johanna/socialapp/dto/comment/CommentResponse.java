@@ -1,24 +1,21 @@
-package se.jensen.johanna.socialapp.dto;
+package se.jensen.johanna.socialapp.dto.comment;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
+ * @param postId
  * @param commentId
  * @param userId
  * @param username
  * @param text
  * @param createdAt
- * @param updatedAt
- * @param replies
  */
-public record CommentDTO(
+public record CommentResponse(
+        Long postId,
         Long commentId,
         Long userId,
         String username,
         String text,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        List<CommentDTO> replies
+        LocalDateTime createdAt
 ) {
 }

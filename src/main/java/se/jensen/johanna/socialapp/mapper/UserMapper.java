@@ -5,6 +5,7 @@ import se.jensen.johanna.socialapp.dto.*;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdateUserRequest;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdateUserResponse;
 import se.jensen.johanna.socialapp.dto.admin.AdminUserDTO;
+import se.jensen.johanna.socialapp.dto.user.*;
 import se.jensen.johanna.socialapp.model.Role;
 import se.jensen.johanna.socialapp.model.User;
 

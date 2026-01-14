@@ -1,4 +1,4 @@
-package se.jensen.johanna.socialapp.dto;
+package se.jensen.johanna.socialapp.dto.comment;
 
 import jakarta.validation.constraints.NotBlank;
 

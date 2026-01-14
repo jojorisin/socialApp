@@ -1,8 +1,9 @@
 package se.jensen.johanna.socialapp.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import se.jensen.johanna.socialapp.dto.FriendResponseDTO;
+import se.jensen.johanna.socialapp.dto.friends.FriendResponseDTO;
 import se.jensen.johanna.socialapp.exception.IllegalFriendshipStateException;
 import se.jensen.johanna.socialapp.exception.NotFoundException;
 import se.jensen.johanna.socialapp.exception.UnauthorizedAccessException;
@@ -10,29 +11,35 @@ import se.jensen.johanna.socialapp.mapper.FriendshipMapper;
 import se.jensen.johanna.socialapp.model.Friendship;
 import se.jensen.johanna.socialapp.model.FriendshipStatus;
 import se.jensen.johanna.socialapp.model.User;
+import se.jensen.johanna.socialapp.dto.user.UserListDTO;
+import se.jensen.johanna.socialapp.mapper.UserMapper;
 import se.jensen.johanna.socialapp.repository.FriendshipRepository;
 import se.jensen.johanna.socialapp.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
     private final UserRepository userRepository;
     private final FriendshipMapper friendshipMapper;
+    private final UserMapper userMapper;
 
     /**
      * Creates a new friendship request with status PENDING.
      * Validates that users exist and that no friendship already exists between them.
      */
     public FriendResponseDTO sendFriendRequest(Long senderId, Long receiverId) {
+        // Validation: User cannot add themselves
         if (senderId.equals(receiverId)) {
             throw new IllegalArgumentException("You cannot add yourself as a friend.");
         }
 
-        // Check if friendship already exists in either direction
+        // Validation: Check if friendship already exists in either direction (A->B or B->A)
         if (friendshipRepository.existsBySender_UserIdAndReceiver_UserId(senderId, receiverId) ||
                 friendshipRepository.existsBySender_UserIdAndReceiver_UserId(receiverId, senderId)) {
             throw new IllegalStateException("Friendship or request already exists.");
@@ -109,17 +116,32 @@ public class FriendshipService {
         return friendshipMapper.toFriendResponse(friendship);
     }
 
-    // Retrieves all friendships (both pending and accepted) for a specific user
+    /**
+     * Retrieves all friendships (both pending and accepted) where the user is either sender or receiver.
+     */
     public List<Friendship> getFriendships(Long userId) {
         return friendshipRepository.findBySender_UserIdOrReceiver_UserId(userId, userId);
     }
 
-    // Retrieves only accepted friendships (The "Friends List")
-    public List<Friendship> getAcceptedFriendships(Long userId) {
-        return friendshipRepository.findFriendshipsByUserIdAndStatus(userId, FriendshipStatus.ACCEPTED);
+    /**
+     * Retrieves only accepted friendships and maps them to a list of Users (the friends).
+     */
+    public List<UserListDTO> getAcceptedFriendships(Long userId) {
+        return friendshipRepository.findFriendshipsByUserIdAndStatus(userId, FriendshipStatus.ACCEPTED)
+                .stream()
+                .map(friendship -> {
+                    // Logic: A friendship consists of a Sender and a Receiver.
+                    // We need to find "the other person". If I am the Sender, the friend is the Receiver, and vice versa.
+                    User friend = friendship.getSender().getUserId().
+                            equals(userId) ? friendship.getReceiver() : friendship.getSender();
+                    return userMapper.toUserListDTO(friend);
+                })
+                .toList();
     }
 
-    // Retrieves pending requests involving the user
+    /**
+     * Retrieves all pending requests involving the user (both sent by them and received by them).
+     */
     public List<Friendship> getPendingFriendships(Long userId) {
         return friendshipRepository.findFriendshipsByUserIdAndStatus(userId, FriendshipStatus.PENDING);
     }

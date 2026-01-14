@@ -1,10 +1,10 @@
 package se.jensen.johanna.socialapp.mapper;
 
 import org.mapstruct.*;
-import se.jensen.johanna.socialapp.dto.CommentDTO;
-import se.jensen.johanna.socialapp.dto.PostRequest;
-import se.jensen.johanna.socialapp.dto.PostResponseDTO;
-import se.jensen.johanna.socialapp.dto.PostWithCommentsDTO;
+import se.jensen.johanna.socialapp.dto.comment.CommentDTO;
+import se.jensen.johanna.socialapp.dto.posts.PostRequest;
+import se.jensen.johanna.socialapp.dto.posts.PostResponseDTO;
+import se.jensen.johanna.socialapp.dto.posts.PostWithCommentsDTO;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostRequest;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostResponse;
 import se.jensen.johanna.socialapp.model.Post;

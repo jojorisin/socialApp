@@ -16,6 +16,8 @@ public class Friendship {
     @ManyToOne
     private User receiver;
 
+    // Stored as a String in the database (e.g., "ACCEPTED") instead of a number (0, 1).
+    // This prevents data corruption if the order of the Enum values changes in the code.
     @Enumerated(EnumType.STRING)
     private FriendshipStatus status = FriendshipStatus.PENDING;
 

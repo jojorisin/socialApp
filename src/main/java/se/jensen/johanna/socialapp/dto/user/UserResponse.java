@@ -1,4 +1,4 @@
-package se.jensen.johanna.socialapp.dto;
+package se.jensen.johanna.socialapp.dto.user;
 
 public record UserResponse(
         Long userId,

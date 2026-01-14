@@ -9,8 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-import se.jensen.johanna.socialapp.dto.PostRequest;
-import se.jensen.johanna.socialapp.dto.PostResponseDTO;
+import se.jensen.johanna.socialapp.dto.posts.PostRequest;
+import se.jensen.johanna.socialapp.dto.posts.PostResponseDTO;
 import se.jensen.johanna.socialapp.service.PostService;
 import se.jensen.johanna.socialapp.util.JwtUtils;
 

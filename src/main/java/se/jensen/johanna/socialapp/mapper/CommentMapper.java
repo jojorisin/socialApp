@@ -2,9 +2,9 @@ package se.jensen.johanna.socialapp.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import se.jensen.johanna.socialapp.dto.CommentDTO;
-import se.jensen.johanna.socialapp.dto.CommentRequest;
-import se.jensen.johanna.socialapp.dto.CommentResponse;
+import se.jensen.johanna.socialapp.dto.comment.CommentDTO;
+import se.jensen.johanna.socialapp.dto.comment.CommentRequest;
+import se.jensen.johanna.socialapp.dto.comment.CommentResponse;
 import se.jensen.johanna.socialapp.dto.ReplyCommentResponse;
 import se.jensen.johanna.socialapp.model.Comment;
 

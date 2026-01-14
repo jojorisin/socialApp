@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.jensen.johanna.socialapp.dto.LoginRequestDTO;
-import se.jensen.johanna.socialapp.dto.LoginResponseDTO;
+import se.jensen.johanna.socialapp.dto.login.LoginRequestDTO;
+import se.jensen.johanna.socialapp.dto.login.LoginResponseDTO;
 import se.jensen.johanna.socialapp.dto.RegisterUserResponse;
-import se.jensen.johanna.socialapp.dto.UserRequest;
+import se.jensen.johanna.socialapp.dto.user.UserRequest;
 import se.jensen.johanna.socialapp.service.TokenService;
 import se.jensen.johanna.socialapp.service.UserService;
 

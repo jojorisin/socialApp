@@ -1,4 +1,4 @@
-package se.jensen.johanna.socialapp.dto;
+package se.jensen.johanna.socialapp.dto.friends;
 
 import se.jensen.johanna.socialapp.model.FriendshipStatus;
 

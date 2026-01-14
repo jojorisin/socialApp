@@ -1,4 +1,6 @@
-package se.jensen.johanna.socialapp.dto;
+package se.jensen.johanna.socialapp.dto.user;
+
+import se.jensen.johanna.socialapp.dto.posts.PostResponseDTO;
 
 import java.util.List;
 
