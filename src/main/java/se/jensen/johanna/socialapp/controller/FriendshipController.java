@@ -57,4 +57,20 @@ public class FriendshipController {
 
     }
 
+    @PreAuthorize("isAuthenticated")
+    @PutMapping("reject/{friendshipId}")
+    public ResponseEntity<FriendResponseDTO> rejectFriendRequest(
+            @PathVariable Long friendshipId,
+            @AuthenticationPrincipal Jwt jwt
+    ){
+        Long currentUserId = jwtUtils.extractUserId(jwt);
+        FriendResponseDTO friendResponseDTO = friendshipService.
+                rejectFriendRequest(friendshipId, currentUserId);
+
+
+        return ResponseEntity.ok(friendResponseDTO);
+
+
+    }
+
 }

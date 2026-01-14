@@ -82,21 +82,24 @@ public class FriendshipService {
         return friendshipMapper.toFriendResponse(friendship);
     }
 
-
+    /**
+     * Rejects a pending friend request.
+     * Ensures the user rejecting the request is the actual receiver.
+     */
     public FriendResponseDTO rejectFriendRequest(Long friendshipId, Long currentUserId){
         Friendship friendship = friendshipRepository.findById(friendshipId).
-                orElseThrow(() -> new NotFoundException("Friendship with id \" + friendshipId + \" not found."));
+                orElseThrow(() -> new NotFoundException("Friendship with id " + friendshipId + " not found."));
 
         // Security check: Only the receiver can reject the request
         if (!friendship.getReceiver().getUserId().equals(currentUserId)) {
-            throw new UnauthorizedAccessException("You are not authorized to accept this request.");
+            throw new UnauthorizedAccessException("You are not authorized to reject this request.");
         }
 
         // Validation: Cannot reject a request that is already accepted
         if (friendship.getStatus().equals(FriendshipStatus.ACCEPTED)) {
             throw new IllegalFriendshipStateException("This request has already been accepted.");
         }
-        // Validation: Cannot accept a request that is already rejected
+        // Validation: Cannot reject a request that is already rejected
         if (friendship.getStatus().equals(FriendshipStatus.REJECTED)) {
             throw new IllegalFriendshipStateException("This request has already been rejected.");
         }
