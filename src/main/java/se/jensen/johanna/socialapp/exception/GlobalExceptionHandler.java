@@ -16,6 +16,27 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedAccess(
+            UnauthorizedAccessException e, WebRequest request) {
+        return buildErrorResponse(
+                HttpStatus.UNAUTHORIZED,
+                "UNAUTHORIZED_ACCESS",
+                e.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(IllegalFriendshipStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalFriendshipState(
+            IllegalFriendshipStateException e, WebRequest request) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST,
+                "ILLEGAL_FRIENDSHIP_STATE",
+                e.getMessage(),
+                request);
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e, WebRequest request) {
         return buildErrorResponse(
