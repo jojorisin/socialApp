@@ -1,6 +1,7 @@
 package se.jensen.johanna.socialapp.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -41,7 +42,7 @@ public class AdminPostController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public @NonNull ResponseEntity<Page<PostResponseDTO>> getAllPostsAdmin(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         Page<PostResponseDTO> postResponseDTOS = postService.findAllPosts(pageable);
