@@ -41,7 +41,7 @@ public class CommentController {
                                                        CommentRequest commentRequest) {
         Long userId = jwtUtils.extractUserId(jwt);
 
-        CommentResponse commentResponse = commentService.postComment(
+        CommentResponse commentResponse = commentService.commentPost(
                 postId, userId, commentRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(commentResponse);
