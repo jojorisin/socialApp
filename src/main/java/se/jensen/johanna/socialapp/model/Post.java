@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class Post {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+
     private LocalDateTime updatedAt;
 
     @JoinColumn(name = "user_id", nullable = false)

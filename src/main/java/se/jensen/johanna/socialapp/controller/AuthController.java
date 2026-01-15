@@ -12,10 +12,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+<<<<<<< HEAD
 import se.jensen.johanna.socialapp.dto.login.LoginRequestDTO;
 import se.jensen.johanna.socialapp.dto.login.LoginResponseDTO;
 import se.jensen.johanna.socialapp.dto.RegisterUserResponse;
 import se.jensen.johanna.socialapp.dto.user.UserRequest;
+=======
+import se.jensen.johanna.socialapp.dto.LoginRequestDTO;
+import se.jensen.johanna.socialapp.dto.LoginResponseDTO;
+import se.jensen.johanna.socialapp.dto.RegisterUserRequest;
+import se.jensen.johanna.socialapp.dto.RegisterUserResponse;
+>>>>>>> origin/main
 import se.jensen.johanna.socialapp.service.TokenService;
 import se.jensen.johanna.socialapp.service.UserService;
 
@@ -43,12 +50,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisterUserResponse> register(@RequestBody
-                                                         UserRequest userRequest) {
-        RegisterUserResponse userResponse = userService.registerUser(userRequest);
+                                                         RegisterUserRequest registerUserRequest) {
+        RegisterUserResponse userResponse = userService.registerUser(registerUserRequest);
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        userRequest.username(),
-                        userRequest.password()));
+                        registerUserRequest.username(),
+                        registerUserRequest.password()));
         String token = tokenService.generateToken(auth);
         userResponse.setToken(token);
         return ResponseEntity.ok().body(userResponse);
@@ -57,12 +64,12 @@ public class AuthController {
 
     @PostMapping("/register/admin")
     public ResponseEntity<RegisterUserResponse> registerAdmin(@Valid @RequestBody
-                                                              UserRequest userRequest) {
-        RegisterUserResponse userResponse = userService.registerAdminUser(userRequest);
+                                                              RegisterUserRequest registerUserRequest) {
+        RegisterUserResponse userResponse = userService.registerAdminUser(registerUserRequest);
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        userRequest.username(),
-                        userRequest.password()));
+                        registerUserRequest.username(),
+                        registerUserRequest.password()));
         String token = tokenService.generateToken(auth);
         userResponse.setToken(token);
         return ResponseEntity.ok().body(userResponse);

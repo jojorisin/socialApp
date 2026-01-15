@@ -64,6 +64,8 @@ public class UserController {
         // 2. Fetch the list of friends (users who have an ACCEPTED friendship with this user)
         List<UserListDTO> friends = friendshipService.getAcceptedFriendships(userId);
 
+        // TODO: GET FRIEND REQUEST WITH PENDING STATE
+
         // 3. Combine them into a single Profile DTO
         UserProfileDTO userProfile = new UserProfileDTO(friends,user);
 

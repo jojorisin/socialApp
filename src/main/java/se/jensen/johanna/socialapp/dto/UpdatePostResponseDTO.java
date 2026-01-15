@@ -1,11 +1,10 @@
-package se.jensen.johanna.socialapp.dto.posts;
+package se.jensen.johanna.socialapp.dto;
 
 import java.time.LocalDateTime;
 
-public record PostResponseDTO(
+public record UpdatePostResponseDTO(
         Long postId,
         Long userId,
-        String username,
         String text,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

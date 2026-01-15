@@ -1,17 +1,21 @@
 package se.jensen.johanna.socialapp.mapper;
 
 import org.mapstruct.*;
+<<<<<<< HEAD
 import se.jensen.johanna.socialapp.dto.comment.CommentDTO;
 import se.jensen.johanna.socialapp.dto.posts.PostRequest;
 import se.jensen.johanna.socialapp.dto.posts.PostResponseDTO;
 import se.jensen.johanna.socialapp.dto.posts.PostWithCommentsDTO;
+=======
+import se.jensen.johanna.socialapp.dto.*;
+>>>>>>> origin/main
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostRequest;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostResponse;
 import se.jensen.johanna.socialapp.model.Post;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = CommentMapper.class)
+@Mapper(componentModel = "spring", uses = CommentMapper.class, imports = {java.time.LocalDateTime.class})
 public interface PostMapper {
 
     @Mapping(target = "userId", source = "post.user.userId")
@@ -32,11 +36,20 @@ public interface PostMapper {
     @Mapping(target = "username", source = "user.username")
     PostResponseDTO toPostResponseDTO(Post post);
 
+    /**
+     * @param postRequest maps post from postrequest
+     * @return post
+     */
+    @Mapping(target = "updatedAt", ignore = true)
     Post toPost(PostRequest postRequest);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
     void updatePost(PostRequest postRequest, @MappingTarget Post post);
 
+    @Mapping(target = "userId", source = "post.user.userId")
+    UpdatePostResponseDTO toUpdatePostResponseDTO(Post post);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updatePostAdmin(AdminUpdatePostRequest adminRequest, @MappingTarget Post post);

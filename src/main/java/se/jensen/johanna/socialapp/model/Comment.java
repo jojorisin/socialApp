@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ public class Comment {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+
     private LocalDateTime updatedAt;
 
     @JoinColumn(name = "parent_id")
@@ -51,7 +50,7 @@ public class Comment {
     /**
      * Sets parent and post for reply comment
      *
-     * @param reply
+     * @param reply Takes reply comment
      */
     public void addReply(Comment reply) {
         replies.add(reply);

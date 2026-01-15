@@ -9,8 +9,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+<<<<<<< HEAD
 import se.jensen.johanna.socialapp.dto.posts.PostRequest;
 import se.jensen.johanna.socialapp.dto.posts.PostResponseDTO;
+=======
+import se.jensen.johanna.socialapp.dto.PostRequest;
+import se.jensen.johanna.socialapp.dto.PostResponseDTO;
+import se.jensen.johanna.socialapp.dto.UpdatePostResponseDTO;
+>>>>>>> origin/main
 import se.jensen.johanna.socialapp.service.PostService;
 import se.jensen.johanna.socialapp.util.JwtUtils;
 
@@ -55,14 +61,14 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{postId}")
-    public ResponseEntity<PostResponseDTO> editPost(@AuthenticationPrincipal
-                                                    Jwt jwt,
-                                                    @PathVariable Long postId,
-                                                    @RequestBody @Valid PostRequest postRequest) {
+    public ResponseEntity<UpdatePostResponseDTO> editPost(@AuthenticationPrincipal
+                                                          Jwt jwt,
+                                                          @PathVariable Long postId,
+                                                          @RequestBody @Valid PostRequest postRequest) {
 
         Long userId = jwtUtils.extractUserId(jwt);
 
-        PostResponseDTO postResponse = postService.updatePost(
+        UpdatePostResponseDTO postResponse = postService.updatePost(
                 postRequest,
                 postId,
                 userId);
