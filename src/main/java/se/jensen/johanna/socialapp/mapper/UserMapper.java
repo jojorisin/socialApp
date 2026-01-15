@@ -16,8 +16,6 @@ public interface UserMapper {
     UserListDTO toUserListDTO(User user);
 
 
-    UserResponse toUserResponse(User user);
-
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "username", ignore = true)
     void updateUser(UpdateUserRequest userRequest, @MappingTarget User user);
@@ -28,7 +26,7 @@ public interface UserMapper {
 
     @Mapping(target = "role", source = "role")
     @Mapping(target = "password", source = "hashedPw")
-    User toUser(UserRequest userRequest, String hashedPw, Role role);
+    User toUser(RegisterUserRequest registerUserRequest, String hashedPw, Role role);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUserAdmin(AdminUpdateUserRequest userRequest, @MappingTarget User user);

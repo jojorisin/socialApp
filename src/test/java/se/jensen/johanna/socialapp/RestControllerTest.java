@@ -11,8 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import se.jensen.johanna.socialapp.SocialAppApplication;
-import se.jensen.johanna.socialapp.dto.UserRequest;
+import se.jensen.johanna.socialapp.dto.RegisterUserRequest;
 import se.jensen.johanna.socialapp.model.User;
 import se.jensen.johanna.socialapp.repository.PostRepository;
 import se.jensen.johanna.socialapp.repository.UserRepository;
@@ -35,10 +34,10 @@ class RestControllerTest {
 
     @Test
     void createUserTest() throws Exception {
-        UserRequest userRequest = new UserRequest(
+        RegisterUserRequest registerUserRequest = new RegisterUserRequest(
                 "ipod@test.com", "johanna", "password", "password"
         );
-        String jsondata = objectMapper.writeValueAsString(userRequest);
+        String jsondata = objectMapper.writeValueAsString(registerUserRequest);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users/register")
                         .contentType(MediaType.APPLICATION_JSON)

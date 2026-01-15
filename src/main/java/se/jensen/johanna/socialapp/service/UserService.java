@@ -27,11 +27,11 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
 
-    public RegisterUserResponse registerUser(UserRequest userRequest) {
-        validateCredentials(userRequest);
+    public RegisterUserResponse registerUser(RegisterUserRequest registerUserRequest) {
+        validateCredentials(registerUserRequest);
 
-        String hashedPw = passwordEncoder.encode(userRequest.password());
-        User user = userMapper.toUser(userRequest, hashedPw, Role.MEMBER);
+        String hashedPw = passwordEncoder.encode(registerUserRequest.password());
+        User user = userMapper.toUser(registerUserRequest, hashedPw, Role.MEMBER);
         userRepository.save(user);
         RegisterUserResponse response = new RegisterUserResponse();
         response.setEmail(user.getEmail());
@@ -84,11 +84,11 @@ public class UserService {
 
 
     //GER UT ROLE_ADMIN
-    public RegisterUserResponse registerAdminUser(UserRequest userRequest) {
-        validateCredentials(userRequest);
+    public RegisterUserResponse registerAdminUser(RegisterUserRequest registerUserRequest) {
+        validateCredentials(registerUserRequest);
 
-        String hashedPw = passwordEncoder.encode(userRequest.password());
-        User user = userMapper.toUser(userRequest, hashedPw, Role.ADMIN);
+        String hashedPw = passwordEncoder.encode(registerUserRequest.password());
+        User user = userMapper.toUser(registerUserRequest, hashedPw, Role.ADMIN);
         userRepository.save(user);
         RegisterUserResponse response = new RegisterUserResponse();
         response.setEmail(user.getEmail());
@@ -108,14 +108,14 @@ public class UserService {
 
     }
 
-    public void validateCredentials(UserRequest userRequest) {
-        if (!userRequest.password().equals(userRequest.confirmPassword())) {
+    public void validateCredentials(RegisterUserRequest registerUserRequest) {
+        if (!registerUserRequest.password().equals(registerUserRequest.confirmPassword())) {
             throw new PasswordMisMatchException();
         }
-        if (userRepository.existsByEmail(userRequest.email())) {
+        if (userRepository.existsByEmail(registerUserRequest.email())) {
             throw new NotUniqueException("Email is already registered. Log in or try different email.");
         }
-        if (userRepository.existsByUsername(userRequest.username())) {
+        if (userRepository.existsByUsername(registerUserRequest.username())) {
             throw new NotUniqueException("Username is already registered. Please choose a unique username.");
         }
     }
