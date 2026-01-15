@@ -25,10 +25,6 @@ public class FriendshipService {
     private final UserRepository userRepository;
     private final FriendshipMapper friendshipMapper;
 
-    /**
-     * Creates a new friendship request with status PENDING.
-     * Validates that users exist and that no friendship already exists between them.
-     */
 
     //Updates friendship with receiver response.
     public FriendResponseDTO updateFriendRequest(Long friendshipId, Long userId, ReplyFriendRequest reply) {
@@ -54,7 +50,7 @@ public class FriendshipService {
             throw new UnauthorizedAccessException("You are not authorized to respond.");
         }
 
-//If rejected by receiver or cancelled by sender resource is deleted
+//If rejected by receiver or cancelled by sender - resource is deleted
         if (reply.status().equals(FriendshipStatus.REJECTED) ||
                 reply.status().equals(FriendshipStatus.CANCELLED)) {
             friendshipRepository.delete(friendship);
@@ -68,6 +64,11 @@ public class FriendshipService {
         return friendshipMapper.toFriendResponseDTO(friendship);
 
     }
+
+    /**
+     * Creates a new friendship request with status PENDING.
+     * Validates that users exist and that no friendship already exists between them.
+     */
 
     public FriendResponseDTO sendFriendRequest(Long senderId, Long receiverId) {
         if (senderId.equals(receiverId)) {

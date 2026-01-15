@@ -73,7 +73,7 @@ public class FriendshipController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PatchMapping("/{friendshipId}/respond")
+    @PatchMapping("/{friendshipId}")
     public ResponseEntity<FriendResponseDTO> updateFriendship(@AuthenticationPrincipal
                                                               Jwt jwt,
                                                               @PathVariable
