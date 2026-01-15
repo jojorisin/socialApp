@@ -3,6 +3,7 @@ package se.jensen.johanna.socialapp.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -41,7 +42,7 @@ public class PostController {
      */
     @GetMapping
     public @NonNull ResponseEntity<Page<PostResponseDTO>> getAllPosts(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
 
