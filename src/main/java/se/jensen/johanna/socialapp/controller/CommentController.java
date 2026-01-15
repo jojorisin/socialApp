@@ -93,7 +93,7 @@ public class CommentController {
 
         Long userId = jwtUtils.extractUserId(jwt);
 
-        commentService.deleteComment(userId, commentId);
+        commentService.deleteComment(commentId, userId);
 
         return ResponseEntity.noContent().build();
     }
