@@ -8,7 +8,7 @@ import se.jensen.johanna.socialapp.model.Post;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = CommentMapper.class)
+@Mapper(componentModel = "spring", uses = CommentMapper.class, imports = {java.time.LocalDateTime.class})
 public interface PostMapper {
 
     @Mapping(target = "userId", source = "post.user.userId")
@@ -29,10 +29,16 @@ public interface PostMapper {
     @Mapping(target = "username", source = "user.username")
     PostResponseDTO toPostResponseDTO(Post post);
 
+    /**
+     * @param postRequest maps post from postrequest
+     * @return post
+     */
+    @Mapping(target = "updatedAt", ignore = true)
     Post toPost(PostRequest postRequest);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
     void updatePost(PostRequest postRequest, @MappingTarget Post post);
 
     @Mapping(target = "userId", source = "post.user.userId")

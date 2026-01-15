@@ -26,7 +26,7 @@ public class CommentService {
     private final CommentMapper commentMapper;
 
 
-    public CommentResponse postComment(Long postId,
+    public CommentResponse commentPost(Long postId,
                                        Long userId,
                                        CommentRequest commentRequest) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
@@ -57,11 +57,9 @@ public class CommentService {
 
     //Returnerar inte post om inte de finns kommentar
     public List<CommentDTO> findAllMainComments(Long postId) {
-        List<CommentDTO> commentDTOS =
-                commentRepository.findAllMainCommentsWithReplies(postId)
-                        .stream().map(commentMapper::toCommentDTO).toList();
+        return commentRepository.findAllMainCommentsWithReplies(postId)
+                .stream().map(commentMapper::toCommentDTO).toList();
 
-        return commentDTOS;
 
     }
 
