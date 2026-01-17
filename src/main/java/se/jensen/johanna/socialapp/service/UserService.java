@@ -107,7 +107,11 @@ public class UserService {
      * @return (@ link RoleResponse)
      */
     public RoleResponse addRole(RoleRequest request) {
-        User user = userRepository.findByEmail(request.email()).orElseThrow(NotFoundException::new);
+        User user = userRepository.findByEmail(request.email()).orElseThrow(() -> {
+            log.warn("Could not update role - user with email={} not found", request.email());
+            return new NotFoundException();
+        });
+        log.info("Admin role-update initiated for user with email={}", user.getEmail());
         user.setRole(request.role());
         userRepository.save(user);
         return new RoleResponse(user.getEmail(), user.getRole());
@@ -116,9 +120,9 @@ public class UserService {
 
     public AdminUpdateUserResponse updateUserAdmin(AdminUpdateUserRequest userRequest,
                                                    Long userId) {
-        log.info("Trying to update ADMIN with id={}", userId);
+        log.info("Admin update initiated for user with id={}", userId);
         User user = userRepository.findById(userId).orElseThrow(() -> {
-            log.warn("Could not update ADMIN - ADMIN with id={} not found", userId);
+            log.warn("Could not update User - User with id={} not found", userId);
             return new NotFoundException();
         });
         userMapper.updateUserAdmin(userRequest, user);
