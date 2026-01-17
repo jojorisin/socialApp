@@ -33,9 +33,16 @@ public class PostService {
         Page<Post> postPage = postRepository.findAll(pageable);
 
         return postPage.map(postMapper::toPostResponseDTO);
-       /* return postRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(postMapper::toPostResponseDTO).toList();*/
 
+
+    }
+
+    public Page<PostResponseDTO> findAllPostsForUser(Long userId, Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User not found");
+        }
+        Page<Post> userPostPage = postRepository.findByUser_UserId(userId, pageable);
+        return userPostPage.map(postMapper::toPostResponseDTO);
     }
 
     public PostResponseDTO findPost(Long postId) {

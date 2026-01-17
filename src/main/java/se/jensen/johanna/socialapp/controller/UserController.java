@@ -6,7 +6,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-import se.jensen.johanna.socialapp.dto.*;
+import se.jensen.johanna.socialapp.dto.UpdateUserRequest;
+import se.jensen.johanna.socialapp.dto.UpdateUserResponse;
+import se.jensen.johanna.socialapp.dto.UserDTO;
+import se.jensen.johanna.socialapp.dto.UserListDTO;
 import se.jensen.johanna.socialapp.service.UserService;
 import se.jensen.johanna.socialapp.util.JwtUtils;
 
@@ -36,14 +39,6 @@ public class UserController {
         UserDTO userDTO = userService.findUser(userId);
         return ResponseEntity.ok(userDTO);
 
-    }
-
-    //Visar användarprofil med alla posts den gjort
-    @GetMapping("{userId}/with-posts")
-    public ResponseEntity<UserWithPostsDTO> getUserWithPosts(@PathVariable Long userId) {
-
-        UserWithPostsDTO userWithPostsDTO = userService.getUserWithPosts(userId);
-        return ResponseEntity.ok(userWithPostsDTO);
     }
 
 

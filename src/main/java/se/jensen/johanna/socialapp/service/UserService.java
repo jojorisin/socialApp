@@ -69,10 +69,6 @@ public class UserService {
 
     }
 
-    public UserWithPostsDTO getUserWithPosts(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
-        return userMapper.toUserWithPosts(user);
-    }
 
     public List<AdminUserDTO> findAllUsersAdmin() {
         return userRepository.findAll().stream()
