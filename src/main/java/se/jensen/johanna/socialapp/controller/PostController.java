@@ -21,6 +21,8 @@ import se.jensen.johanna.socialapp.dto.UpdatePostResponseDTO;
 import se.jensen.johanna.socialapp.service.PostService;
 import se.jensen.johanna.socialapp.util.JwtUtils;
 
+import java.util.Optional;
+
 /**
  * Controller for handling operations related to posts in the system.
  */
@@ -35,24 +37,34 @@ public class PostController {
 
     /**
      * Retrieves a paginated list of all posts, sorted by creation date in descending order.
+     * Optional variable of userId retrieves all posts from that user
      *
      * @param pageable the pagination and sorting information provided for the request,
      *                 including page size, page number, and sort order.
      * @return a ResponseEntity containing a paginated list of PostResponseDTO objects.
      */
-    @GetMapping
+    @GetMapping({"", "/user/{userId}"})
     public @NonNull ResponseEntity<Page<PostResponseDTO>> getAllPosts(
+            @PathVariable(name = "userId", required = false) Optional<Long> userId,
             @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
 
-        Page<PostResponseDTO> postResponseDTOS = postService.findAllPosts(pageable);
+        Page<PostResponseDTO> postResponseDTOS = userId
+                .map(id -> postService.findAllPostsForUser(id, pageable))
+                .orElseGet(() -> postService.findAllPosts(pageable));
+
 
         return ResponseEntity.ok(postResponseDTOS);
 
     }
 
-
+    /**
+     * Retrieves one specific post
+     *
+     * @param postId ID of post to fetch
+     * @return (@ link PostResponseDTO)
+     */
     @GetMapping("/{postId}")
     public ResponseEntity<PostResponseDTO> getPost(@PathVariable Long postId) {
         PostResponseDTO postResponseDto = postService.findPost(postId);

@@ -69,10 +69,6 @@ public class UserService {
 
     }
 
-    public UserWithPostsDTO getUserWithPosts(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
-        return userMapper.toUserWithPosts(user);
-    }
 
     public List<AdminUserDTO> findAllUsersAdmin() {
         return userRepository.findAll().stream()
@@ -103,8 +99,8 @@ public class UserService {
     /**
      * Updates and saves Role for user by Admin
      *
-     * @param request (@link RoleRequest) Contains email of user to update and type of role
-     * @return (@ link RoleResponse)
+     * @param request {@link RoleRequest} Contains email of user to update and type of role
+     * @return {@link RoleResponse}
      */
     public RoleResponse addRole(RoleRequest request) {
         User user = userRepository.findByEmail(request.email()).orElseThrow(() -> {
