@@ -1,5 +1,6 @@
 package se.jensen.johanna.socialapp.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,7 +39,7 @@ public class AdminUserController {
     }
 
     @PatchMapping("/roles")
-    public ResponseEntity<RoleResponse> giveRole(@RequestBody RoleRequest roleRequest) {
+    public ResponseEntity<RoleResponse> giveRole(@Valid @RequestBody RoleRequest roleRequest) {
         RoleResponse roleResponse = userService.addRole(roleRequest);
 
         return ResponseEntity.ok(roleResponse);
