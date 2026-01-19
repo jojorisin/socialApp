@@ -1,21 +1,25 @@
 package se.jensen.johanna.socialapp.controller;
 
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-import se.jensen.johanna.socialapp.dto.*;
+import se.jensen.johanna.socialapp.dto.LoginRequestDTO;
+import se.jensen.johanna.socialapp.dto.LoginResponseDTO;
+import se.jensen.johanna.socialapp.dto.RefreshTokenResponse;
+import se.jensen.johanna.socialapp.dto.RegisterUserRequest;
 import se.jensen.johanna.socialapp.exception.RefreshTokenException;
 import se.jensen.johanna.socialapp.model.RefreshToken;
 import se.jensen.johanna.socialapp.security.MyUserDetails;
 import se.jensen.johanna.socialapp.service.RefreshTokenService;
 import se.jensen.johanna.socialapp.service.TokenService;
 import se.jensen.johanna.socialapp.service.UserService;
+import se.jensen.johanna.socialapp.util.CookieUtils;
 
 @CrossOrigin(origins = "http://localhost:5174")
 @RestController
@@ -26,10 +30,12 @@ public class AuthController {
     private final TokenService tokenService;
     private final UserService userService;
     private final RefreshTokenService refreshTokenService;
+    private final CookieUtils cookieUtils;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> getToken(@RequestBody
-                                                     LoginRequestDTO loginRequestDTO) {
+                                                     LoginRequestDTO loginRequestDTO,
+                                                     HttpServletResponse httpServletResponse) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequestDTO.username(),
@@ -37,50 +43,88 @@ public class AuthController {
                 ));
 
 
-        String accessToken = tokenService.generateToken(auth);
-        Long userId = ((MyUserDetails) auth.getPrincipal()).getUserId();
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userId);
+        LoginResponseDTO loginResponseDTO = createLoginResponse(auth);
 
-        return ResponseEntity.ok().body(new LoginResponseDTO(accessToken, refreshToken.getToken()));
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(loginResponseDTO.userId());
+        ResponseCookie responseCookie = cookieUtils.createRefreshCookie(refreshToken.getToken());
+        httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+
+        return ResponseEntity.ok(loginResponseDTO);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody
-                                                             @Valid
-                                                             RefreshTokenRequest tokenRequest) {
+    public ResponseEntity<RefreshTokenResponse> refreshToken(
+            @CookieValue(name = "refreshToken") String oldTokenStr,
+            HttpServletResponse httpServletResponse
+    ) {
 
-        return refreshTokenService.findByToken(tokenRequest.refreshToken())
+        RefreshToken oldToken = refreshTokenService.findByToken(oldTokenStr)
                 .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
-                .map(user -> {
-                    String newJwt = tokenService.generateToken(user);
-                    return ResponseEntity.ok(new RefreshTokenResponse(newJwt, tokenRequest.refreshToken()));
-                }).orElseThrow(() -> new RefreshTokenException("RefreshToken is not in database"));
+                .orElseThrow(() -> new RefreshTokenException("RefreshToken is not in database"));
+
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(oldToken.getUser().getUserId());
+
+        ResponseCookie responseCookie = cookieUtils.createRefreshCookie(newRefreshToken.getToken());
+        httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+        String newJwt = tokenService.generateToken(oldToken.getUser());
+        return ResponseEntity.ok(new RefreshTokenResponse(newJwt));
+
+
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterUserResponse> register(@RequestBody
-                                                         RegisterUserRequest registerUserRequest) {
-        RegisterUserResponse userResponse = userService.registerUser(registerUserRequest);
+    public ResponseEntity<LoginResponseDTO> register(@RequestBody
+                                                     RegisterUserRequest registerUserRequest, HttpServletResponse httpServletResponse) {
+        userService.registerUser(registerUserRequest);
+
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         registerUserRequest.username(),
                         registerUserRequest.password()));
 
-        String token = tokenService.generateToken(auth);
-        Long userId = ((MyUserDetails) auth.getPrincipal()).getUserId();
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userId);
-        userResponse.setAccessToken(token);
-        userResponse.setRefreshToken(refreshToken.getToken());
-        return ResponseEntity.ok().body(userResponse);
+        LoginResponseDTO loginResponseDTO = createLoginResponse(auth);
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(loginResponseDTO.userId());
+        ResponseCookie responseCookie = cookieUtils.createRefreshCookie(refreshToken.getToken());
+        httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+
+
+        return ResponseEntity.ok(loginResponseDTO);
 
     }
 
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<Void> logout(
+            @CookieValue(name = "refreshToken", required = false) String refreshTokenStr,
+            HttpServletResponse httpServletResponse
+    ) {
+        if (refreshTokenStr != null) {
+            refreshTokenService.deleteRefreshToken(refreshTokenStr);
+        }
+        ResponseCookie cleanCookie = cookieUtils.getCleanResponseCookie();
+        httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, cleanCookie.toString());
         //logout metod, frontend rensar token
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * private Help method that receives an Authentication object and returns LoginResponseDTO
+     *
+     * @param auth Authentication-object used for user information and token
+     * @return {@link LoginResponseDTO}
+     */
+    private LoginResponseDTO createLoginResponse(Authentication auth) {
+        MyUserDetails userDetails = ((MyUserDetails) auth.getPrincipal());
+
+        return new LoginResponseDTO(
+                tokenService.generateToken(auth),
+                userDetails.getUserId(),
+                userDetails.getRole(),
+                userDetails.getUsername()
+        );
+
+
     }
 
 
