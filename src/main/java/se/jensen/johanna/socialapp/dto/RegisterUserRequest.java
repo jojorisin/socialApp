@@ -11,7 +11,8 @@ public record RegisterUserRequest(
         @Size(min = 8, message = "Password needs to be min 8 characters")
         String password,
         @NotBlank(message = "Passwords needs to match")
-        String confirmPassword
+        String confirmPassword,
+        String profileImagePath
 
 ) {
 }
