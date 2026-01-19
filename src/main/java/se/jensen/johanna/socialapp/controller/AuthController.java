@@ -27,9 +27,10 @@ public class AuthController {
     private final UserService userService;
     private final RefreshTokenService refreshTokenService;
 
+    // I've added userId to the LoginResponseDTO so that the frontend knows what user is logged in
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> getToken(@RequestBody
-                                                     LoginRequestDTO loginRequestDTO) {
+    public ResponseEntity<LoginResponseDTO> getToken(
+            @RequestBody LoginRequestDTO loginRequestDTO) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequestDTO.username(),
@@ -41,7 +42,7 @@ public class AuthController {
         Long userId = ((MyUserDetails) auth.getPrincipal()).getUserId();
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userId);
 
-        return ResponseEntity.ok().body(new LoginResponseDTO(accessToken, refreshToken.getToken()));
+        return ResponseEntity.ok().body(new LoginResponseDTO(accessToken, refreshToken.getToken(), userId));
     }
 
     @PostMapping("/refresh")
