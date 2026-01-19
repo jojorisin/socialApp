@@ -2,7 +2,6 @@ package se.jensen.johanna.socialapp.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,9 @@ import se.jensen.johanna.socialapp.model.Post;
 import se.jensen.johanna.socialapp.model.User;
 import se.jensen.johanna.socialapp.repository.PostRepository;
 import se.jensen.johanna.socialapp.repository.UserRepository;
+
+
+import java.util.List;
 
 @Slf4j
 @Transactional
@@ -45,6 +47,12 @@ public class PostService {
         return userPostPage.map(postMapper::toPostResponseDTO);
     }
 
+    public List<PostResponse> getPostsForUser(Long userId){
+        List<Post> userPosts=postRepository.findAllPostsByUserId(userId);
+        return userPosts.stream()
+                .map(postMapper::toPostResponse)
+                .toList();
+    }
     public PostResponseDTO findPost(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(NotFoundException::new);
