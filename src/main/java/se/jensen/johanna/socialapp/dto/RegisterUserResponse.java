@@ -1,8 +1,5 @@
 package se.jensen.johanna.socialapp.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-
 //needs to be class
 // token is set in controller after register
 //so user doesnt have to login after register
@@ -17,14 +14,12 @@ import lombok.Setter;
  * - userId: The unique identifier assigned to the user upon registration.
  * - token: An authentication token issued for the user.
  */
-@Getter
-@Setter
-public class RegisterUserResponse {
-    private String email;
-    private String username;
-    private Long userId;
-    private String accessToken;
-    private String refreshToken;
+
+public record RegisterUserResponse(
+        String username,
+        Long userId,
+        String accessToken
+) {
 
 
 }

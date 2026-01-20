@@ -30,7 +30,7 @@ public class UserService {
     private final PostService postService;
 
 
-    public RegisterUserResponse registerUser(RegisterUserRequest registerUserRequest) {
+    public void registerUser(RegisterUserRequest registerUserRequest) {
         log.info("Trying to register new user with email={}", registerUserRequest.email());
         validateCredentials(registerUserRequest);
 
@@ -40,11 +40,11 @@ public class UserService {
 
         log.info("New user registered with id={} and email={}", user.getUserId(), user.getEmail());
 
-        RegisterUserResponse response = new RegisterUserResponse();
+      /*  RegisterUserResponse response = new RegisterUserResponse();
         response.setEmail(user.getEmail());
         response.setUsername(user.getUsername());
         response.setUserId(user.getUserId());
-        return response;
+        return response;*/
     }
 
     public UpdateUserResponse updateUser(UpdateUserRequest userRequest, Long userId) {
@@ -146,8 +146,7 @@ public class UserService {
     }
 
 
-
-    public HomePageResponse getProfile(Long userId){
+    public HomePageResponse getProfile(Long userId) {
         UserDTO userDTO = findUser(userId);
         List<UserListDTO> friends = friendshipService.getFriendsForUser(userId);
         List<PostResponse> posts = postService.getPostsForUser(userId);
