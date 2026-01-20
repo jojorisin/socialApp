@@ -21,7 +21,7 @@ import se.jensen.johanna.socialapp.service.TokenService;
 import se.jensen.johanna.socialapp.service.UserService;
 import se.jensen.johanna.socialapp.util.CookieUtils;
 
-@CrossOrigin(origins = "http://localhost:5174")
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
