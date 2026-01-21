@@ -78,7 +78,8 @@ public class PostService {
                 .toList();
     }
 
-    public Page<MyPostResponse> getMyPosts(Long userId, Pageable pageable) {
+    /* replacar den ovan med pagination och personlig dto*/
+    public Page<MyPostResponse> findAuthenticatedUserPosts(Long userId, Pageable pageable) {
         Page<Post> myPosts = postRepository.findByUser_UserId(userId, pageable);
         return myPosts.map(postMapper::toMyPostResponse);
     }

@@ -269,10 +269,5 @@ public class UserService {
         }
     }
 
-    private User findUserOrThrow(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User does not exist in database"));
-    }
-
 
 }

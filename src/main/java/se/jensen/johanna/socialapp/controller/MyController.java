@@ -46,7 +46,7 @@ public class MyController {
             @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable) {
         Long userId = jwtUtils.extractUserId(jwt);
-        Page<MyPostResponse> myPosts = postService.getMyPosts(userId, pageable);
+        Page<MyPostResponse> myPosts = postService.findAuthenticatedUserPosts(userId, pageable);
         return ResponseEntity.ok(myPosts);
     }
 
