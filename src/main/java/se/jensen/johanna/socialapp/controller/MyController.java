@@ -1,16 +1,20 @@
 package se.jensen.johanna.socialapp.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-import se.jensen.johanna.socialapp.dto.MyFriendRequest;
-import se.jensen.johanna.socialapp.dto.UpdateUserRequest;
-import se.jensen.johanna.socialapp.dto.UpdateUserResponse;
-import se.jensen.johanna.socialapp.dto.UserListDTO;
+import se.jensen.johanna.socialapp.dto.*;
 import se.jensen.johanna.socialapp.service.FriendshipService;
+import se.jensen.johanna.socialapp.service.PostService;
 import se.jensen.johanna.socialapp.service.UserService;
 import se.jensen.johanna.socialapp.util.JwtUtils;
 
@@ -23,18 +27,40 @@ import java.util.List;
 public class MyController {
     private final UserService userService;
     private final FriendshipService friendshipService;
+    private final PostService postService;
     private final JwtUtils jwtUtils;
+
+
+    @GetMapping
+    public ResponseEntity<MyUserResponse> getMe(@AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwtUtils.extractUserId(jwt);
+        MyUserResponse myUserResponse = userService.getAuthenticatedUser(userId);
+
+        return ResponseEntity.ok(myUserResponse);
+
+    }
+
+    @GetMapping("/posts")
+    public ResponseEntity<Page<MyPostResponse>> getMyPosts(
+            @AuthenticationPrincipal Jwt jwt,
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+        Long userId = jwtUtils.extractUserId(jwt);
+        Page<MyPostResponse> myPosts = postService.getMyPosts(userId, pageable);
+        return ResponseEntity.ok(myPosts);
+    }
+
 
     /**
      * Returns a list of pending friendrequests for the authenticated user
      * Contains a boolean isIncoming, is true if the user is on the receiving end
      * is false if the user is the sender
      *
-     * @param jwt AccessToken containing ID of authenticated user
+     * @param jwt AccessToken containing ID of the authenticated user
      * @return {@link MyFriendRequest}
      */
-    @GetMapping("/friend-request")
-    public ResponseEntity<List<MyFriendRequest>> getFriendRequests(@AuthenticationPrincipal Jwt jwt) {
+    @GetMapping("/friend-requests")
+    public ResponseEntity<List<MyFriendRequest>> getMyFriendRequests(@AuthenticationPrincipal Jwt jwt) {
         Long userId = jwtUtils.extractUserId(jwt);
         List<MyFriendRequest> myFriendRequests = friendshipService.getFriendRequestsForUser(userId);
 
@@ -52,7 +78,7 @@ public class MyController {
         return ResponseEntity.ok(friends);
     }
 
-    @PreAuthorize("isAuthenticated()")
+
     @PatchMapping
     public ResponseEntity<UpdateUserResponse> updateMe(@AuthenticationPrincipal Jwt jwt,
                                                        @RequestBody UpdateUserRequest userRequest) {
@@ -62,7 +88,17 @@ public class MyController {
         return ResponseEntity.ok(userResponse);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/change-password")
+    public ResponseEntity<Void> changePassword(
+            @AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+        Long userId = jwtUtils.extractUserId(jwt);
+        userService.changePassword(userId, changePasswordRequest);
+
+        return ResponseEntity.noContent().build();
+    }
+
+
     @DeleteMapping
     public ResponseEntity<Void> deleteMe(@AuthenticationPrincipal Jwt jwt) {
         Long userId = jwtUtils.extractUserId(jwt);
@@ -73,5 +109,6 @@ public class MyController {
 
 
     }
+
 
 }

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public record RegisterUserRequest(
         @Email @NotBlank String email,
-        @NotBlank String username,
+        @NotBlank(message = "Username needs to be unique") String username,
         @NotBlank
         @Size(min = 8, message = "Password needs to be min 8 characters")
         String password,

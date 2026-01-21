@@ -15,6 +15,7 @@ public interface UserMapper {
 
     UserListDTO toUserListDTO(User user);
 
+    MyUserResponse toMyUserResponse(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "username", ignore = true)

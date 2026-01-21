@@ -25,6 +25,10 @@ public interface PostMapper {
                 .toList();
     }
 
+    MyPostResponse toMyPostResponse(Post post);
+
+    UserPostsDTO toUserPostsDTO(Post post);
+
     PostResponse toPostResponse(Post post);
 
     @Mapping(target = "userId", source = "user.userId")

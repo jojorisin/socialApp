@@ -36,6 +36,8 @@ public class UserService {
     private final PostService postService;
 
 
+    /* *********************PUBLIC******************* */
+
     /**
      * Registers a new user in the system.
      * Validates credentials, hashes the password, and assigns the default MEMBER role.
@@ -56,15 +58,88 @@ public class UserService {
 
     }
 
+
     /**
-     * Updates an existing user's information.
+     * Retrieves a list of all users with the MEMBER role.
+     *
+     * @return a list of {@link UserListDTO} With less detailed information for a list
+     */
+    public List<UserListDTO> findAllUsers() {
+        return userRepository.findAllUsersByRole(Role.MEMBER).stream()
+                .map(userMapper::toUserListDTO).toList();
+
+    }
+
+
+    /**
+     * Finds a specific user by their ID and returns public user data.
+     *
+     * @param userId the ID of the user to find
+     * @return the user details as a {@link UserDTO}
+     * @throws NotFoundException if the user does not exist
+     */
+    public UserDTO findUser(Long userId) {
+        return userRepository.findById(userId)
+                .map(userMapper::toUserDTO).orElseThrow(NotFoundException::new);
+    }
+
+
+    /* *********************AUTHENTICATED USER********************* */
+
+    /**
+     * Retrieves the authenticated User with detailed information
+     *
+     * @param userId ID of authenticated user
+     * @return {@link MyUserResponse} A detailed user-information response
+     */
+    public MyUserResponse getAuthenticatedUser(Long userId) {
+        User currentUser = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not found."));
+
+        return userMapper.toMyUserResponse(currentUser);
+    }
+
+
+    /**
+     * Updates the password for an authenticated user.
+     * This method validates that the current password matches the one stored in the database,
+     * and that the new password and its confirmation are identical. If valid, the new
+     * password is encrypted and saved.
+     *
+     * @param userId          the ID of the user whose password is to be changed
+     * @param passwordRequest the request object containing the current password,
+     *                        the new password, and the confirmation of the new password
+     * @throws NotFoundException         if no user is found with the provided ID
+     * @throws PasswordMisMatchException if the current password is incorrect or,
+     *                                   if the new password and confirmation do not match
+     */
+    public void changePassword(Long userId, ChangePasswordRequest passwordRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User does not exist in database"));
+        if (!passwordEncoder.matches(passwordRequest.currentPassword(), user.getPassword())) {
+            log.warn("Password mismatch for user with id={}", userId);
+            throw new PasswordMisMatchException("Password does not match current password");
+        }
+        if (!passwordRequest.newPassword().equals(passwordRequest.confirmNewPassword())) {
+            log.warn("Password mismatch for user with id={}", userId);
+            throw new PasswordMisMatchException("New passwords do not match");
+        }
+        String hashedPw = passwordEncoder.encode(passwordRequest.newPassword());
+        user.setPassword(hashedPw);
+        log.info("Password changed for user with id={}", userId);
+        userRepository.save(user);
+
+    }
+
+
+    /**
+     * Updates user information for authenticated user
      *
      * @param userRequest the request object containing updated user details
      * @param userId      the ID of the user to update
      * @return the updated user details as an {@link UpdateUserResponse}
      * @throws NotFoundException if the user with the given ID does not exist
      */
-
     public UpdateUserResponse updateUser(UpdateUserRequest userRequest, Long userId) {
         log.info("Trying to update user with id={}", userId);
 
@@ -82,28 +157,6 @@ public class UserService {
 
     }
 
-    /**
-     * Retrieves a list of all users with the MEMBER role.
-     *
-     * @return a list of {@link UserListDTO} objects
-     */
-
-    public List<UserListDTO> findAllUsers() {
-        return userRepository.findAllUsersByRole(Role.MEMBER).stream()
-                .map(userMapper::toUserListDTO).toList();
-
-    }
-
-    /**
-     * Retrieves a list of all users in the system for administrative purposes.
-     *
-     * @return a list of {@link AdminUserDTO} objects
-     */
-
-    public List<AdminUserDTO> findAllUsersAdmin() {
-        return userRepository.findAll().stream()
-                .map(userMapper::toAdminUserDTO).toList();
-    }
 
     /**
      * Finds a specific user by their ID and returns detailed administrative data.
@@ -118,17 +171,6 @@ public class UserService {
         return userMapper.toAdminUserDTO(user);
     }
 
-    /**
-     * Finds a specific user by their ID and returns standard user data.
-     *
-     * @param userId the ID of the user to find
-     * @return the user details as a {@link UserDTO}
-     * @throws NotFoundException if the user does not exist
-     */
-    public UserDTO findUser(Long userId) {
-        return userRepository.findById(userId)
-                .map(userMapper::toUserDTO).orElseThrow(NotFoundException::new);
-    }
 
     /**
      * Deletes a user from the system by their ID.
@@ -136,7 +178,6 @@ public class UserService {
      * @param userId the ID of the user to delete
      * @throws NotFoundException if the user does not exist
      */
-
     public void deleteUser(Long userId) {
         log.info("Trying to delete user with id={}", userId);
         User userToDelete = userRepository.findById(userId).orElseThrow(() -> {
@@ -147,6 +188,22 @@ public class UserService {
         log.info("User with id={} removed", userId);
     }
 
+
+
+    /* *************************ADMIN METHODS ************************** */
+
+
+    /**
+     * Retrieves a list of all users in the system for administrative purposes.
+     *
+     * @return a list of {@link AdminUserDTO}
+     */
+    public List<AdminUserDTO> findAllUsersAdmin() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toAdminUserDTO).toList();
+    }
+
+
     /**
      * Updates and saves the Role for a user. Intended for Admin use.
      *
@@ -154,7 +211,6 @@ public class UserService {
      * @return {@link RoleResponse} containing the updated role information
      * @throws NotFoundException if the user with the specified email is not found
      */
-
     public RoleResponse addRole(RoleRequest request) {
         User user = userRepository.findByEmail(request.email()).orElseThrow(() -> {
             log.warn("Could not update role - user with email={} not found", request.email());
@@ -166,6 +222,7 @@ public class UserService {
         return new RoleResponse(user.getEmail(), user.getRole());
     }
 
+
     /**
      * Performs an administrative update of a user's details.
      *
@@ -174,7 +231,6 @@ public class UserService {
      * @return the updated user data as an {@link AdminUpdateUserResponse}
      * @throws NotFoundException if the user does not exist
      */
-
     public AdminUpdateUserResponse updateUserAdmin(AdminUpdateUserRequest userRequest,
                                                    Long userId) {
         log.info("Admin update initiated for user with id={}", userId);
@@ -213,18 +269,9 @@ public class UserService {
         }
     }
 
-
-    public HomePageResponse getProfile(Long userId) {
-        UserDTO userDTO = findUser(userId);
-        List<UserListDTO> friends = friendshipService.getFriendsForUser(userId);
-        List<PostResponse> posts = postService.getPostsForCurrentUser(userId);
-
-        return new HomePageResponse(
-                "Profilsida",
-                userDTO.username(),
-                userDTO.profileImagePath(),
-                posts,
-                friends);
+    private User findUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User does not exist in database"));
     }
 
 

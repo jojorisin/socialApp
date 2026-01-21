@@ -6,10 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import se.jensen.johanna.socialapp.dto.PostRequest;
-import se.jensen.johanna.socialapp.dto.PostResponse;
-import se.jensen.johanna.socialapp.dto.PostResponseDTO;
-import se.jensen.johanna.socialapp.dto.UpdatePostResponseDTO;
+import se.jensen.johanna.socialapp.dto.*;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostRequest;
 import se.jensen.johanna.socialapp.dto.admin.AdminUpdatePostResponse;
 import se.jensen.johanna.socialapp.exception.ForbiddenException;
@@ -79,6 +76,16 @@ public class PostService {
         return userPosts.stream()
                 .map(postMapper::toPostResponse)
                 .toList();
+    }
+
+    public Page<MyPostResponse> getMyPosts(Long userId, Pageable pageable) {
+        Page<Post> myPosts = postRepository.findByUser_UserId(userId, pageable);
+        return myPosts.map(postMapper::toMyPostResponse);
+    }
+
+    public Page<UserPostsDTO> getUserPosts(Long userId, Pageable pageable) {
+        Page<Post> userPosts = postRepository.findByUser_UserId(userId, pageable);
+        return userPosts.map(postMapper::toUserPostsDTO);
     }
 
     /**
