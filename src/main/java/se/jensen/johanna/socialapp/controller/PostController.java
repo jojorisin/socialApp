@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -44,7 +43,7 @@ public class PostController {
      * @return a ResponseEntity containing a paginated list of PostDTO.
      */
     @GetMapping
-    public @NonNull ResponseEntity<Page<PostDTO>> getAllPosts(
+    public ResponseEntity<Page<PostDTO>> getAllPosts(
             @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
