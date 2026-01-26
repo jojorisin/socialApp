@@ -123,7 +123,7 @@ public class CommentController {
             Long commentId,
             @ParameterObject
             @PageableDefault (size = 5,
-            sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<CommentDTO> replies = commentService.findAllRepliesForComment(commentId, pageable);
 
         return ResponseEntity.ok(replies);
