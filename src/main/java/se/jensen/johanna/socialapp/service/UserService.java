@@ -90,12 +90,12 @@ public class UserService {
     }
 
     /**
-     * Retrieves a list of all users with the MEMBER role.
+     * Retrieves a list of all users
      *
      * @return a list of {@link UserListDTO} objects
      */
     public List<UserListDTO> getAllUsers() {
-        return userRepository.findAllUsersByRole(Role.MEMBER).stream()
+        return userRepository.findAll().stream()
                 .map(userMapper::toUserListDTO).toList();
 
     }
@@ -103,14 +103,13 @@ public class UserService {
 
     /**
      * Finds a specific user by their ID and returns standard user data.
-     * Returns only user with 'MEMBER' role for public users
      *
      * @param userId the ID of the user to find
      * @return the user details as a {@link UserDTO}
      * @throws NotFoundException if the user does not exist
      */
     public UserDTO getUser(Long userId) {
-        return userRepository.findUserMemberRole(userId)
+        return userRepository.findById(userId)
                 .map(userMapper::toUserDTO).orElseThrow(NotFoundException::new);
     }
 
@@ -132,7 +131,7 @@ public class UserService {
 
 
     /**
-     * Retrieves a list of all Users with both MEMBER and ADMIN role
+     * Retrieves a list of all Users with more detailed information for Admin user
      *
      * @param pageable Paginates list
      * @return {@link AdminUserDTO} a detailed list of users
